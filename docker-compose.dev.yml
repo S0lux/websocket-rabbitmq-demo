@@ -1,0 +1,36 @@
+services:
+
+  reverse-proxy:
+    image: traefik:v3.1
+    command: --api.insecure=true --providers.docker --providers.docker.exposedbydefault=false
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/user/src/app
+    depends_on:
+      - rabbitmq
+    environment:
+      - NODE_ENV=development
+      - RABBITMQ_HOST=rabbitmq
+    env_file:
+      - .env
+    expose:
+      - 3000
+    command: ["npm", "run", "start:dev"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server.rule=Host(`chat.localhost`)"
+
+  rabbitmq:
+    image: rabbitmq:4.0.2
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
