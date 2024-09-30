@@ -13,7 +13,7 @@ export class RabbitmqService implements OnModuleInit {
   ) {}
   instanceId: string;
   private rabbitmqServer: IAmqpConnectionManager;
-  private rabbitmqChannel: ChannelWrapper;
+  private rabbitmqChannel;
   private onlineUsers: Map<string, Set<string>> = new Map();
   private requestCallbacks: Map<
     string,
@@ -83,6 +83,7 @@ export class RabbitmqService implements OnModuleInit {
 
       const { requestId, roomId } = parsedObj;
       const users = Array.from(this.onlineUsers.get(roomId) || []);
+
       this.rabbitmqChannel.publish(
         'user_responses',
         msg.properties.replyTo,
@@ -170,8 +171,9 @@ export class RabbitmqService implements OnModuleInit {
       const requestId = Math.random().toString(36).substring(2, 15);
       const allUsers = new Set<string>();
       let responseCount = 0;
-      const expectedResponses =
-        this.configService.getOrThrow<number>('INSTANCES_NUMBER');
+      const expectedResponses = parseInt(
+        this.configService.getOrThrow<string>('INSTANCES_NUMBER'),
+      );
 
       const callback = (instanceId: string, users: string[]) => {
         users.forEach((user) => allUsers.add(user));
