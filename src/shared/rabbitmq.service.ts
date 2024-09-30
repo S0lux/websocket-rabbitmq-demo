@@ -170,7 +170,8 @@ export class RabbitmqService implements OnModuleInit {
       const requestId = Math.random().toString(36).substring(2, 15);
       const allUsers = new Set<string>();
       let responseCount = 0;
-      const expectedResponses = 2;
+      const expectedResponses =
+        this.configService.getOrThrow<number>('INSTANCES_NUMBER');
 
       const callback = (instanceId: string, users: string[]) => {
         users.forEach((user) => allUsers.add(user));

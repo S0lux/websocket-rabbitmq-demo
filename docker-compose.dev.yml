@@ -25,7 +25,7 @@ services:
     expose:
       - 3000
     deploy:
-      replicas: 2
+      replicas: ${INSTANCES_NUMBER}
     command: ["npm", "run", "start:dev"]
     labels:
       - "traefik.enable=true"
