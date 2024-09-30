@@ -19,18 +19,23 @@ services:
       - rabbitmq
     environment:
       - NODE_ENV=development
-      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq/
     env_file:
       - .env
     expose:
       - 3000
+    deploy:
+      replicas: 2
     command: ["npm", "run", "start:dev"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.server.rule=Host(`chat.localhost`)"
+      - "traefik.http.services.server.loadBalancer.sticky.cookie.name=server_id"
+      - "traefik.http.services.server.loadBalancer.sticky.cookie.httpOnly=true"
 
   rabbitmq:
     image: rabbitmq:4.0.2
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+
