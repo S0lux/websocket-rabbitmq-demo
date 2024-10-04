@@ -8,10 +8,6 @@
 $ npm install
 ```
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Compile and run the project
 
 ```bash
